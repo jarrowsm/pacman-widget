@@ -2,8 +2,10 @@ local wibox = require("wibox")
 local watch = require("awful.widget.watch")
 local beautiful = require('beautiful')
 
-local SCRIPT_DIR = "~/.config/awesome/pacman-widget/pac.sh"
-local function GET_SCRIPT_DIR(SCRIPT_DIR) return string.format([[bash -c %s]], SCRIPT_DIR) end
+local SCRIPT_DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/"
+local ICON_DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/icons/"
+
+local function GET_SCRIPT_DIR(SCRIPT_DIR) return string.format([[bash -c %spac.sh]], SCRIPT_DIR) end
 
 local widget = {}
 local pacman_widget = {}
@@ -22,13 +24,11 @@ local function worker(user_args)
     pacman_widget = wibox.widget {
        {
           {
-              id = 'label',
-              font = font,
-              widget = wibox.widget.textbox,
+              id = 'icon',
+              resize = false,
+              widget = wibox.widget.imagebox,
           },
-          forced_width = 40,
           valign = 'center',
-          halign = 'left',
           layout = wibox.container.place,
        },
        {
@@ -36,10 +36,11 @@ local function worker(user_args)
            font = font,
            widget = wibox.widget.textbox
        },
+       spacing = 5,
        layout = wibox.layout.fixed.horizontal,
        set_value = function(self, new_value)
-           self:get_children_by_id('label')[1]:set_text("PAC")
            self:get_children_by_id('txt')[1]:set_text(new_value)
+           self:get_children_by_id('icon')[1]:set_image(ICON_DIR .. 'pacman.svg')
        end
     } 
     watch(GET_SCRIPT_DIR(SCRIPT_DIR),
