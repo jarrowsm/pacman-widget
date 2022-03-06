@@ -11,7 +11,7 @@ local widget = {}
 local pacman_widget = {}
 local config = {}
 
-config.refresh_rate = 600
+config.interval = 600
 
 
 local function worker(user_args)
@@ -44,7 +44,7 @@ local function worker(user_args)
        end
     } 
     watch(GET_SCRIPT_DIR(SCRIPT_DIR),
-       _config.refresh_rate,
+       _config.interval,
        function(widget, stdout)
            for line in stdout:gmatch("[^\r\n]+") do
                widget:set_value(line)
