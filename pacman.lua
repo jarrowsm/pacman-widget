@@ -19,35 +19,39 @@ local function worker(user_args)
     end
 
     pacman_widget = wibox.widget {
-       {
-          {
-              id = 'icon',
-              resize = false,
-              widget = wibox.widget.imagebox,
-          },
-          valign = 'center',
-          layout = wibox.container.place,
-       },
-       {
-           id = 'txt',
-           font = font,
-           widget = wibox.widget.textbox
-       },
-       spacing = 5,
-       layout = wibox.layout.fixed.horizontal,
-       set_value = function(self, new_value)
-           self:get_children_by_id('txt')[1]:set_text(new_value)
-           self:get_children_by_id('icon')[1]:set_image(ICON_DIR .. 'pacman.svg')
-       end
+        {
+            {
+                id = 'icon',
+                resize = false,
+                widget = wibox.widget.imagebox,
+            },
+            valign = 'center',
+            layout = wibox.container.place,
+        },
+        {
+            id = 'txt',
+            font = font,
+            widget = wibox.widget.textbox
+        },
+        spacing = 5,
+        layout = wibox.layout.fixed.horizontal,
+        set_value = function(self, new_value)
+            self:get_children_by_id('txt')[1]:set_text(new_value)
+            local icon
+            if tonumber(new_value) > 0 then
+                icon = 'pacman'
+            else
+                icon = 'pacman-full'
+            end
+            self:get_children_by_id('icon')[1]:set_image(ICON_DIR .. icon .. '.svg')
+        end
     } 
     watch([[bash -c "checkupdates 2>/dev/null | wc -l"]],
         _config.interval,
         function(widget, stdout)
             for line in stdout:gmatch("[^\r\n]+") do
-                if tonumber(line) > 0 then
-                    widget:set_value(line)
-                    return
-                end
+                widget:set_value(line)
+                return
            end
        end,
        pacman_widget
