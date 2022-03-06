@@ -2,10 +2,7 @@ local wibox = require("wibox")
 local watch = require("awful.widget.watch")
 local beautiful = require('beautiful')
 
-local SCRIPT_DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/"
 local ICON_DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/icons/"
-
-local function GET_SCRIPT_DIR(SCRIPT_DIR) return string.format([[bash -c %spac.sh]], SCRIPT_DIR) end
 
 local widget = {}
 local pacman_widget = {}
@@ -43,12 +40,14 @@ local function worker(user_args)
            self:get_children_by_id('icon')[1]:set_image(ICON_DIR .. 'pacman.svg')
        end
     } 
-    watch(GET_SCRIPT_DIR(SCRIPT_DIR),
-       _config.interval,
-       function(widget, stdout)
-           for line in stdout:gmatch("[^\r\n]+") do
-               widget:set_value(line)
-               return
+    watch([[bash -c "checkupdates 2>/dev/null | wc -l"]],
+        _config.interval,
+        function(widget, stdout)
+            for line in stdout:gmatch("[^\r\n]+") do
+                if tonumber(line) > 0 then
+                    widget:set_value(line)
+                    return
+                end
            end
        end,
        pacman_widget
