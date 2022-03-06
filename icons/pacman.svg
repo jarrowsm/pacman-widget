@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg7384"
+   version="1.1"
+   height="16"
+   width="16"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="pacman.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1918"
+     inkscape:window-height="1060"
+     id="namedview15"
+     showgrid="true"
+     inkscape:zoom="22.627417"
+     inkscape:cx="26.715378"
+     inkscape:cy="16.594912"
+     inkscape:window-x="0"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg7384"
+     inkscape:pagecheckerboard="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2992" />
+  </sodipodi:namedview>
+  <title
+     id="title9167">Gnome Symbolic Icon Theme</title>
+  <metadata
+     id="metadata90">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Gnome Symbolic Icon Theme</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs7386" />
+  <g
+     transform="translate(-60,-518)"
+     id="layer9"
+     style="display:inline" />
+  <g
+     transform="translate(-60,-518)"
+     id="layer10" />
+  <g
+     transform="translate(-60,-518)"
+     id="layer11" />
+  <g
+     id="XMLID_1_"
+     transform="matrix(0.03282435,0,0,0.03125423,-0.71058541,0.00829339)"
+     style="stroke-width:0.40587367;stroke-miterlimit:4;stroke-dasharray:none">
+    <path
+       id="XMLID_5_"
+       class="st0"
+       d="M 326.3,255.7 470.5,111.5 c 10.3,-10.3 10.3,-26 0,-36.2 C 422,26.7 357.8,0 290.1,0 148.6,0 33.8,114.8 33.8,256.3 33.8,397.8 148.6,512 290.1,512 c 67.7,0 131.9,-26.7 180.5,-75.2 10.3,-10.3 10.3,-26 0,-36.2 z m -75.2,-76.6 c -21.2,0 -38.3,-17.1 -38.3,-38.3 0,-21.2 17.1,-38.3 38.3,-38.3 21.2,0 38.3,17.1 38.3,38.3 0,21.2 -17.1,38.3 -38.3,38.3 z"
+       style="stroke-width:0.40587367;stroke-miterlimit:4;stroke-dasharray:none" />
+  </g>
+  <g
+     transform="translate(-60,-518)"
+     id="layer13" />
+  <g
+     transform="translate(-60,-518)"
+     id="layer14" />
+  <g
+     transform="translate(-60,-518)"
+     id="layer15" />
+  <path
+     style="fill:#bebebe;stroke-width:0.000574524;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000;fill-opacity:1"
+     d="M 7.9991454,15.948722 C 5.4727515,15.70975 3.109834,14.33753 1.7681278,12.330174 1.2330532,11.529638 0.91180275,10.828136 0.68536428,9.9657862 0.49216121,9.2300071 0.44512259,8.8459655 0.44448407,7.9991454 0.44387588,7.1925532 0.48155601,6.8792929 0.67035992,6.1212873 1.3616727,3.3458209 3.6963107,1.0699153 6.6295229,0.31203874 7.3146144,0.13502641 7.7342849,0.08005841 8.5736697,0.05739644 10.048436,0.01758022 11.251012,0.26839979 12.551145,0.8869726 c 0.943895,0.4490829 2.154339,1.3527417 2.342158,1.7485412 0.09765,0.2057908 0.06894,0.4965266 -0.0682,0.690566 -0.05565,0.07874 -1.170123,1.1574191 -2.476604,2.3970657 -1.306481,1.2396466 -2.3720889,2.2653487 -2.3680173,2.2793379 0.00407,0.01399 1.0945503,1.0642704 2.4232863,2.3339576 1.416205,1.353269 2.444865,2.369596 2.485922,2.456117 0.164827,0.347348 0.05129,0.655882 -0.379802,1.032136 -1.819461,1.587997 -4.147701,2.347549 -6.5107416,2.124028 z M 8.1337145,5.4914328 C 8.2320342,5.4406714 8.3951049,5.3094991 8.4960939,5.1999391 9.0360786,4.6141245 8.8489446,3.6856258 8.1189055,3.328451 7.7598853,3.1527987 7.309985,3.1529664 6.9504173,3.3288885 5.9464233,3.8200969 6.0630137,5.2224114 7.1370731,5.5739274 c 0.2054503,0.067239 0.8023148,0.017837 0.9966414,-0.082493 z"
+     id="path1342" />
+</svg>
