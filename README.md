@@ -2,7 +2,7 @@
 
 This widget shows the number of upgradable Pacman packages on a given interval.
 
-![](screenshots/pacman.png) ![](screenshots/pacman-full.png)
+![](screenshots/pacman.gif) ![](screenshots/pacman-full.png)
 
 ## Installation
 

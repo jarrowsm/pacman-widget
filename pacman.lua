@@ -91,7 +91,7 @@ local function worker(user_args)
                     prompt.visible = true
                     awful.placement.top(prompt, 
                         { 
-                            margins = { top = 25 },
+                            margins = { top = 20 },
                             parent = mouse
                         })
                 end
@@ -142,7 +142,6 @@ local function worker(user_args)
                         text = upgrades_tbl[i],
                         forced_height = prompt_row_height,
                         paddings = 1,
-                        --margins = 4,
                         widget = wibox.widget.textbox
                     },
                     layout = wibox.layout.ratio.horizontal,
