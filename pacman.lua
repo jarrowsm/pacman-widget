@@ -52,22 +52,33 @@ local function worker(user_args)
         end
     } 
     
-    local rows = {
-        { widget = wibox.widget.textbox },
-        spacing = 4,
-        layout = wibox.layout.fixed.vertical,
-    }
+    local rows = wibox.layout.fixed.vertical()
     
-    local prompt = awful.popup {
+    local ptr = 0
+    rows:connect_signal("button::press", function(_,_,_,button)
+          if button == 4 then
+              if ptr > 0 then
+                  rows.children[p].visible = true
+                  ptr = ptr - 1
+              end
+          elseif button == 5 then
+              if ptr < #rows.children and ((#rows.children - ptr) > _config.prompt_show) then
+                  ptr = ptr + 1
+                  rows.children[ptr].visible = false
+              end
+          end
+       end)
+    
+    local prompt = wibox {
         border_width = _config.prompt_border_width,
         border_color = _config.prompt_border_color,
-        bg = _config.prompt_bg_color,
+        width = 200,     -- TODO adjust to package names
+        height = 400,    -- TODO determine with _config.prompt_show
         ontop = true,
         visible = false,
-        shape = gears.shape.rounded_rect,
-        maximum_width = 1000,
-        offset = { y = 4 },
-        widget = {}
+        shape = function(cr, width, height)
+            gears.shape.rounded_rect(cr, width, height, 4)
+        end,
     }
 
     pacman_widget:buttons(
@@ -76,7 +87,12 @@ local function worker(user_args)
                 if prompt.visible then
                     prompt.visible = false
                 else
-                    prompt:move_next_to(mouse.current_widget_geometry)
+                    prompt.visible = true
+                    awful.placement.top(prompt, 
+                        { 
+                            margins = { top = 25 },
+                            parent = mouse
+                        })
                 end
             end)
         )
@@ -113,15 +129,6 @@ local function worker(user_args)
 
             for i = 1, n_upgrades do
                 local row
-                if i > _config.prompt_show then
-                    row = wibox.widget{
-                        align = 'center',
-                        text = ".\n.\n(plus " .. n_upgrades - _config.prompt_show .. " more)",
-                        widget = wibox.widget.textbox
-                    }
-                    rows[i] = row
-                    break
-                end
                 row = wibox.widget{
                     {
                         text = tostring(i),
@@ -134,10 +141,10 @@ local function worker(user_args)
                         margins = 4,
                         widget = wibox.widget.textbox
                     },
-                    layout = wibox.layout.ratio.horizontal
+                    layout = wibox.layout.ratio.horizontal,
                 }
-                row:ajust_ratio(2, 0.1, 0.9, 0)
-                rows[i] = row
+                row:ajust_ratio(2, 0.2, 0.8, 0)
+                rows:add(row)
             end
 
             prompt:setup {
