@@ -41,17 +41,17 @@ local function worker(user_args)
         },
         spacing = 5,
         layout = wibox.layout.fixed.horizontal,
-        set_value = function(self, new_value)
-            self:get_children_by_id('txt')[1]:set_text(new_value)
-            local icon
-            if tonumber(new_value) > 0 then
-                icon = 'pacman'
-            else
-                icon = 'pacman-full'
-            end
-            self:get_children_by_id('icon')[1]:set_image(ICON_DIR .. icon .. '.svg')
-        end
     } 
+    function pacman_widget:set(new_value)
+        pacman_widget:get_children_by_id('txt')[1]:set_text(new_value)
+        local icon
+        if tonumber(new_value) > 0 then
+            icon = 'pacman'
+        else
+            icon = 'pacman-full'
+        end
+        pacman_widget:get_children_by_id('icon')[1]:set_image(ICON_DIR .. icon .. '.svg')
+    end
    
     local rows = wibox.layout.fixed.vertical()
     
@@ -70,7 +70,6 @@ local function worker(user_args)
           end
        end)
     
-
     local prompt = wibox {
         border_width = _config.prompt_border_width,
         border_color = _config.prompt_border_color,
@@ -113,11 +112,10 @@ local function worker(user_args)
                 upgrades_tbl[#upgrades_tbl+1] = value 
             end
            
-            n_upgrades = #upgrades_tbl
-            widget:set_value(n_upgrades)
+            widget:set(#upgrades_tbl)
            
             local avail = ""
-            if n_upgrades == 0 then
+            if #upgrades_tbl == 0 then
                 avail = "No "
             end
             
@@ -131,13 +129,13 @@ local function worker(user_args)
                 widget = wibox.widget.textbox,
             }
 
-           -- package got added
+            -- package got added
             for k, v in ipairs(upgrades_tbl) do
                 for i = 1, #rows.children do
-                    if v == rows.children[i]:get_children_by_id('txt')[1].text then goto continue end
+                    if v == rows.children[i]:get_txt() then goto continue end
                 end
                 for j = k, #rows.children do  -- increment indeces after added
-                    rows.children[j]:get_children_by_id('idx')[1]:set_text(tostring(j+1))
+                    rows.children[j]:set_idx(tostring(j+1))
                 end
                 
                 local row = wibox.widget{
@@ -155,31 +153,29 @@ local function worker(user_args)
                     },
                     layout = wibox.layout.ratio.horizontal,
                 }
+                function row:get_txt() return row:get_children_by_id('txt')[1].text end
+                function row:set_idx(idx) get_children_by_id('idx')[1]:set_text(idx) end
                 row:ajust_ratio(2, 0.1, 0.9, 0)
-
                 rows:insert(k, row)
-
-
                 ::continue::
             end
 
             -- package got removed
             for i = 1, #rows.children do
                 for _, v in ipairs(upgrades_tbl) do
-                    if v == rows.children[i]:get_children_by_id('txt')[1].text then goto continue end
+                    if v == rows.children[i]:get_txt() then goto continue end
                 end
                 for j = i+1, #rows.children do  -- decrement indeces after removed
-                    rows.children[j]:get_children_by_id('idx')[1]:set_text(tostring(j-1))
+                    rows.children[j]:set_idx(tostring(j-1))
                 end
                 rows:remove(i)
                 break
                 ::continue::
             end
 
-            
             local displ
-            if n_upgrades < _config.prompt_show then
-                displ = n_upgrades
+            if #upgrades_tbl < _config.prompt_show then
+                displ = #upgrades_tbl
             else
                 displ = _config.prompt_show
             end
