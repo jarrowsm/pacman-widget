@@ -14,7 +14,7 @@ config.interval = 600
 config.prompt_bg_color = '#222222'
 config.prompt_border_width = 1
 config.prompt_border_color = '#7e7e7e'
-config.prompt_show = 5
+config.prompt_height = 5
 config.prompt_width = 300
 
 local function worker(user_args)
@@ -63,7 +63,7 @@ local function worker(user_args)
                   ptr = ptr - 1
               end
           elseif button == 5 then
-              if ptr < #rows.children and ((#rows.children - ptr) > _config.prompt_show) then
+              if ptr < #rows.children and ((#rows.children - ptr) > _config.prompt_height) then
                   ptr = ptr + 1
                   rows.children[ptr].visible = false
               end
@@ -174,10 +174,10 @@ local function worker(user_args)
             end
 
             local displ
-            if #upgrades_tbl < _config.prompt_show then
+            if #upgrades_tbl < _config.prompt_height then
                 displ = #upgrades_tbl
             else
-                displ = _config.prompt_show
+                displ = _config.prompt_height
             end
 
             prompt:geometry {
@@ -186,15 +186,19 @@ local function worker(user_args)
             prompt:setup {
                 {
                     {
-                        header,
-                        rows,
-                        layout = wibox.layout.fixed.vertical,
+                        {
+                            header,
+                            rows,
+                            layout = wibox.layout.fixed.vertical
+                        },
+                        content_fill_horizontal = true,
+                        layout = wibox.container.place
                     },
-                    content_fill_horizontal = true,
-                    layout = wibox.container.place
+                    margins = 10,
+                    layout = wibox.container.margin
                 },
-                margins = 10,
-                layout = wibox.container.margin
+                bg = _config.prompt_bg_color,
+                layout = wibox.widget.background
             }
        end,
        pacman_widget
