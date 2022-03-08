@@ -130,16 +130,25 @@ local function worker(user_args)
                 forced_height = prompt_header_height,
                 widget = wibox.widget.textbox,
             }
-            
-            for i = 1, n_upgrades do
-                local row
-                row = wibox.widget{
+
+           -- package got added
+            for k, v in ipairs(upgrades_tbl) do
+                for i = 1, #rows.children do
+                    if v == rows.children[i]:get_children_by_id('txt')[1].text then goto continue end
+                end
+                for j = k, #rows.children do  -- increment indeces after added
+                    rows.children[j]:get_children_by_id('idx')[1]:set_text(tostring(j+1))
+                end
+                
+                local row = wibox.widget{
                     {
-                        text = tostring(i),
+                        id = 'idx',
+                        text = tostring(k),
                         widget = wibox.widget.textbox
                     },
                     {
-                        text = upgrades_tbl[i],
+                        id = 'txt',
+                        text = v,
                         forced_height = prompt_row_height,
                         paddings = 1,
                         widget = wibox.widget.textbox
@@ -147,8 +156,26 @@ local function worker(user_args)
                     layout = wibox.layout.ratio.horizontal,
                 }
                 row:ajust_ratio(2, 0.1, 0.9, 0)
-                rows:add(row)
+
+                rows:insert(k, row)
+
+
+                ::continue::
             end
+
+            -- package got removed
+            for i = 1, #rows.children do
+                for _, v in ipairs(upgrades_tbl) do
+                    if v == rows.children[i]:get_children_by_id('txt')[1].text then goto continue end
+                end
+                for j = i+1, #rows.children do  -- decrement indeces after removed
+                    rows.children[j]:get_children_by_id('idx')[1]:set_text(tostring(j-1))
+                end
+                rows:remove(i)
+                break
+                ::continue::
+            end
+
             
             local displ
             if n_upgrades < _config.prompt_show then
@@ -158,7 +185,7 @@ local function worker(user_args)
             end
 
             prompt:geometry {
-                height = 17 + prompt_header_height + displ * (prompt_row_height + 1.05)
+                height = 15 + prompt_header_height + displ * (prompt_row_height + 1.05)
             }
             prompt:setup {
                 {
