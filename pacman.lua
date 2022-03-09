@@ -154,7 +154,7 @@ local function worker(user_args)
                     layout = wibox.layout.ratio.horizontal,
                 }
                 function row:get_txt() return row:get_children_by_id('txt')[1].text end
-                function row:set_idx(idx) get_children_by_id('idx')[1]:set_text(idx) end
+                function row:set_idx(idx) row:get_children_by_id('idx')[1]:set_text(idx) end
                 row:ajust_ratio(2, 0.1, 0.9, 0)
                 rows:insert(k, row)
                 ::continue::
