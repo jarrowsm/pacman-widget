@@ -43,13 +43,9 @@ local function worker(user_args)
     } 
     function pacman_widget:set(new_value)
         pacman_widget:get_children_by_id('txt')[1]:set_text(new_value)
-        local icon
-        if tonumber(new_value) > 0 then
-            icon = 'pacman'
-        else
-            icon = 'pacman-full'
-        end
-        pacman_widget:get_children_by_id('icon')[1]:set_image(ICON_DIR .. icon .. '.svg')
+        pacman_widget:get_children_by_id('icon')[1]:set_image(
+            ICON_DIR .. (tonumber(new_value) > 0 and 'pacman' or 'pacman-full') .. '.svg'
+        )
     end
    
     local rows = wibox.layout.fixed.vertical()
@@ -98,26 +94,17 @@ local function worker(user_args)
             local upgrades = ""
             local upgrades_tbl = {}
 
-            for line in stdout:gmatch("[^()]+") do
-                upgrades = line
-            end
-
-            for value in string.gmatch(upgrades, '([^\n]+)') do
+            for value in stdout:gmatch('([^\n]+)') do
                 upgrades_tbl[#upgrades_tbl+1] = value 
             end
            
             widget:set(#upgrades_tbl)
            
-            local avail = ""
-            if #upgrades_tbl == 0 then
-                avail = "No "
-            end
-            
             local popup_header_height = 30
             local popup_row_height = 20
 
             local header = wibox.widget {
-                markup = '<b>' .. avail .. 'Available Upgrades</b>',
+                markup = '<b>' .. (#upgrades_tbl == 0 and "No " or "") .. 'Available Upgrades</b>',
                 align = 'center',
                 forced_height = popup_header_height,
                 widget = wibox.widget.textbox,
