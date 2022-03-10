@@ -1,6 +1,5 @@
 local wibox = require("wibox")
 local awful = require("awful")
-local watch = require("awful.widget.watch")
 local beautiful = require('beautiful')
 local gears = require("gears")
 
@@ -11,11 +10,11 @@ local pacman_widget = {}
 local config = {}
 
 config.interval = 600
-config.prompt_bg_color = '#222222'
-config.prompt_border_width = 1
-config.prompt_border_color = '#7e7e7e'
-config.prompt_height = 5
-config.prompt_width = 300
+config.popup_bg_color = '#222222'
+config.popup_border_width = 1
+config.popup_border_color = '#7e7e7e'
+config.popup_height = 10
+config.popup_width = 300
 
 local function worker(user_args)
     local args = user_args or {}
@@ -63,42 +62,37 @@ local function worker(user_args)
                   ptr = ptr - 1
               end
           elseif button == 5 then
-              if ptr < #rows.children and ((#rows.children - ptr) > _config.prompt_height) then
+              if ptr < #rows.children and ((#rows.children - ptr) > _config.popup_height) then
                   ptr = ptr + 1
                   rows.children[ptr].visible = false
               end
           end
        end)
     
-    local prompt = wibox {
-        border_width = _config.prompt_border_width,
-        border_color = _config.prompt_border_color,
-        width = _config.prompt_width,
-        ontop = true,
+    local popup = awful.popup {
+        border_width = _config.popup_border_width,
+        border_color = _config.popup_border_color,
+        shape = gears.shape.rounded_rect,
         visible = false,
-        shape = function(cr, width, height)
-            gears.shape.rounded_rect(cr, width, height, 4)
-        end,
+        ontop = true,
+        offset = { y = 5},
+        widget = {}
     }
 
     pacman_widget:buttons(
         awful.util.table.join(
             awful.button({}, 1, function()
-                if prompt.visible then
-                    prompt.visible = false
+                if popup.visible then
+                    popup.visible = false
                 else
-                    prompt.visible = true
-                    awful.placement.top(prompt, 
-                        { 
-                            margins = { top = 20 },
-                            parent = mouse
-                        })
+                    popup.visible = true
+                    popup:move_next_to(mouse.current_widget_geometry)
                 end
             end)
         )
     )
 
-    watch([[bash -c "checkupdates 2>/dev/null"]],
+    awful.widget.watch([[bash -c "checkupdates 2>/dev/null"]],
         _config.interval,
         function(widget, stdout)
             local upgrades = ""
@@ -119,13 +113,13 @@ local function worker(user_args)
                 avail = "No "
             end
             
-            local prompt_header_height = 30
-            local prompt_row_height = 18
+            local popup_header_height = 30
+            local popup_row_height = 20
 
             local header = wibox.widget {
                 markup = '<b>' .. avail .. 'Available Upgrades</b>',
                 align = 'center',
-                forced_height = prompt_header_height,
+                forced_height = popup_header_height,
                 widget = wibox.widget.textbox,
             }
 
@@ -147,7 +141,7 @@ local function worker(user_args)
                     {
                         id = 'txt',
                         text = v,
-                        forced_height = prompt_row_height,
+                        forced_height = popup_row_height,
                         paddings = 1,
                         widget = wibox.widget.textbox
                     },
@@ -173,32 +167,28 @@ local function worker(user_args)
                 ::continue::
             end
 
-            local displ
-            if #upgrades_tbl < _config.prompt_height then
-                displ = #upgrades_tbl
-            else
-                displ = _config.prompt_height
-            end
-
-            prompt:geometry {
-                height = 15 + prompt_header_height + displ * (prompt_row_height + 1.05)
-            }
-            prompt:setup {
+            local height = popup_header_height + math.min(#upgrades_tbl, _config.popup_height) * popup_row_height
+            popup:setup {
                 {
                     {
                         {
-                            header,
-                            rows,
-                            layout = wibox.layout.fixed.vertical
+                            {
+                                header,
+                                rows,
+                                forced_height = height,
+                                layout = wibox.layout.fixed.vertical
+                            },
+                            content_fill_horizontal = true,
+                            layout = wibox.container.place
                         },
-                        content_fill_horizontal = true,
-                        layout = wibox.container.place
+                        margins = 10,
+                        layout = wibox.container.margin
                     },
-                    margins = 10,
-                    layout = wibox.container.margin
+                    bg = _config.popup_bg_color,
+                    layout = wibox.widget.background
                 },
-                bg = _config.prompt_bg_color,
-                layout = wibox.widget.background
+                forced_width = _config.popup_width,
+                layout = wibox.layout.fixed.horizontal
             }
        end,
        pacman_widget
@@ -206,7 +196,5 @@ local function worker(user_args)
    return pacman_widget
 end
 
-return setmetatable(pacman_widget, { __call = function(_, ...)
-    return worker(...)
-end })
+return setmetatable(pacman_widget, { __call = function(_, ...) return worker(...) end })
 

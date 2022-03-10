@@ -20,11 +20,11 @@ s.mytasklist, -- Middle widget
         -- custom
         pacman_widget{
             interval = 300,
-            prompt_bg_color = '#000000',
-            prompt_border_width = 3,
-            prompt_border_color = '#FFFFFF',
-            prompt_height = 10,     -- No. packages shown in scrollable window
-            prompt_width = 200
+            popup_bg_color = '#000000',
+            popup_border_width = 3,
+            popup_border_color = '#FFFFFF',
+            popup_height = 5,     -- No. packages shown in scrollable window
+            popup_width = 200
         },
 ```
 
