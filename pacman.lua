@@ -1,9 +1,11 @@
+local naughty = require("naughty")
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require('beautiful')
 local gears = require("gears")
 
-local ICON_DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/icons/"
+local DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/"
+local ICON_DIR = DIR .. "icons/"
 
 local widget = {}
 local pacman_widget = {}
@@ -71,7 +73,7 @@ local function worker(user_args)
         shape = gears.shape.rounded_rect,
         visible = false,
         ontop = true,
-        offset = { y = 5},
+        offset = { y = 5 },
         widget = {}
     }
 
@@ -88,10 +90,56 @@ local function worker(user_args)
         )
     )
 
+    local upgr_opacity = 0.7
+    local upgr_btn = wibox.widget {
+        {
+            image = ICON_DIR .. 'upgrade.svg',
+            resize = false,
+            layout = wibox.widget.imagebox
+        },
+        opacity = upgr_opacity,
+        layout = wibox.container.background
+
+    }
+
+    awful.spawn.once([[/usr/bin/lxpolkit]])
+
+    upgr_btn:buttons(
+        awful.util.table.join(
+            awful.button({}, 1, function()
+            awful.spawn.with_line_callback("bash -c " .. DIR .. "upgrade", {
+                -- TODO
+                stdout = function(line)
+                    naughty.notify({ text = "LINE: "..line })
+                end,
+                stderr = function(line)
+                    naughty.notify({ text = "ERR: "..line })
+                end,
+            })
+            end)
+        )
+    )
+
+    local old_cursor, old_wibox
+    upgr_btn:connect_signal("mouse::enter", function(c)
+        c:set_opacity(1)
+        c:emit_signal('widget::redraw_needed')
+        local wb = mouse.current_wibox
+        old_cursor, old_wibox = wb.cursor, wb
+        wb.cursor = "hand2"
+    end)
+    upgr_btn:connect_signal("mouse::leave", function(c)
+        c:set_opacity(upgr_opacity)
+        c:emit_signal('widget::redraw_needed')
+        if old_wibox then
+            old_wibox.cursor = old_cursor
+            old_wibox = nil
+        end
+    end)
+
     awful.widget.watch([[bash -c "checkupdates 2>/dev/null"]],
         _config.interval,
         function(widget, stdout)
-            local upgrades = ""
             local upgrades_tbl = {}
 
             for value in stdout:gmatch('([^\n]+)') do
@@ -104,10 +152,23 @@ local function worker(user_args)
             local popup_row_height = 20
 
             local header = wibox.widget {
-                markup = '<b>' .. (#upgrades_tbl == 0 and "No " or "") .. 'Available Upgrades</b>',
-                align = 'center',
+                {
+                    nil,
+                    {
+                        markup = '<b>' .. (#upgrades_tbl == 0 and "No" or #upgrades_tbl) .. ' Available Upgrades</b>',
+                        layout = wibox.widget.textbox,
+                    },
+                    #upgrades_tbl > 0 and {upgr_btn,
+                        valign = 'center',
+                        layout = wibox.container.place,
+                    },
+                    expand = "none",
+                    layout = wibox.layout.align.horizontal,
+                },
                 forced_height = popup_header_height,
-                widget = wibox.widget.textbox,
+                left = 20,
+                right = 20,
+                layout = wibox.container.margin
             }
 
             -- package got added
