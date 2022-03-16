@@ -90,7 +90,7 @@ local function worker(user_args)
         )
     )
 
-    local upgr_opacity = 0.7
+    local upgr_opacity = 0.6
     local upgr_btn = wibox.widget {
         {
             image = ICON_DIR .. 'upgrade.svg',
@@ -102,60 +102,76 @@ local function worker(user_args)
 
     }
 
-    awful.spawn.once([[/usr/bin/lxpolkit]])
 
-    upgr_btn:buttons(
-        awful.util.table.join(
-            awful.button({}, 1, function()
-            awful.spawn.with_line_callback("bash -c " .. DIR .. "upgrade", {
-                -- TODO
-                stdout = function(line)
-                    naughty.notify({ text = "LINE: "..line })
-                end,
-                stderr = function(line)
-                    naughty.notify({ text = "ERR: "..line })
-                end,
-            })
-            end)
-        )
-    )
-
+    local busy, upgrading = false, false
     local old_cursor, old_wibox
     upgr_btn:connect_signal("mouse::enter", function(c)
-        c:set_opacity(1)
-        c:emit_signal('widget::redraw_needed')
-        local wb = mouse.current_wibox
-        old_cursor, old_wibox = wb.cursor, wb
-        wb.cursor = "hand2"
+        if not busy then
+            c:set_opacity(1)
+            c:emit_signal('widget::redraw_needed')
+            local wb = mouse.current_wibox
+            old_cursor, old_wibox = wb.cursor, wb
+            wb.cursor = "hand2"
+        end
     end)
     upgr_btn:connect_signal("mouse::leave", function(c)
-        c:set_opacity(upgr_opacity)
+        if not busy then 
+            c:set_opacity(upgr_opacity)
+            c:emit_signal('widget::redraw_needed')
+            if old_wibox then
+                old_wibox.cursor = old_cursor
+                old_wibox = nil
+            end
+        end
+    end)
+    awful.spawn.once([[/usr/bin/lxpolkit]])
+    upgr_btn:connect_signal("button::press", function(c)
+        c:set_opacity(1)
         c:emit_signal('widget::redraw_needed')
         if old_wibox then
             old_wibox.cursor = old_cursor
             old_wibox = nil
         end
+        if not busy then
+            busy = true
+            awful.spawn.with_line_callback("bash -c " .. DIR .. "upgrade", {
+                stdout = function()
+                    upgrading = true
+                    timer:emit_signal("timeout")
+                end,
+                stderr = function(line)
+                    if (line ~= nil and line ~= '') then
+                        naughty.notify({ title = "Error performing upgrade!",
+                                         text = line })
+                    end
+                end,
+                exit = function()
+                    c:set_opacity(upgr_opacity)
+                    c:emit_signal('widget::redraw_needed')
+                    timer:emit_signal("timeout")
+                    busy, upgrading = false, false
+                end,
+            })
+        end
     end)
 
-    awful.widget.watch([[bash -c "checkupdates 2>/dev/null"]],
+    _, timer = awful.widget.watch([[bash -c "checkupdates 2>/dev/null"]],
         _config.interval,
         function(widget, stdout)
             local upgrades_tbl = {}
-
             for value in stdout:gmatch('([^\n]+)') do
                 upgrades_tbl[#upgrades_tbl+1] = value 
             end
-           
             widget:set(#upgrades_tbl)
            
             local popup_header_height = 30
             local popup_row_height = 20
-
             local header = wibox.widget {
                 {
                     nil,
                     {
-                        markup = '<b>' .. (#upgrades_tbl == 0 and "No" or #upgrades_tbl) .. ' Available Upgrades</b>',
+                        markup = '<b>' .. (upgrading and "Upgrading " .. #upgrades_tbl .. " Packages" or 
+                            (#upgrades_tbl == 0 and "No" or #upgrades_tbl) .. ' Available Upgrades') .. '</b>',
                         layout = wibox.widget.textbox,
                     },
                     #upgrades_tbl > 0 and {upgr_btn,
@@ -241,7 +257,7 @@ local function worker(user_args)
        end,
        pacman_widget
     )
-   return pacman_widget
+    return pacman_widget
 end
 
 return setmetatable(pacman_widget, { __call = function(_, ...) return worker(...) end })
