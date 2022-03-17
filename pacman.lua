@@ -7,7 +7,6 @@ local gears = require("gears")
 local DIR = os.getenv("HOME") .. "/.config/awesome/pacman-widget/"
 local ICON_DIR = DIR .. "icons/"
 
-local widget = {}
 local pacman_widget = {}
 local config = {}
 
@@ -102,7 +101,6 @@ local function worker(user_args)
 
     }
 
-
     local busy, upgrading = false, false
     local old_cursor, old_wibox
     upgr_btn:connect_signal("mouse::enter", function(c)
@@ -133,11 +131,14 @@ local function worker(user_args)
             old_wibox = nil
         end
         if not busy then
-            busy = true
+            busy, one_shot = true, true
             awful.spawn.with_line_callback("bash -c " .. DIR .. "upgrade", {
                 stdout = function()
                     upgrading = true
-                    timer:emit_signal("timeout")
+                    if one_shot then
+                        timer:emit_signal("timeout") 
+                        one_shot = false 
+                    end
                 end,
                 stderr = function(line)
                     if (line ~= nil and line ~= '') then
