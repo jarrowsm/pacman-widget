@@ -175,7 +175,8 @@ local function worker(user_args)
                             (#upgrades_tbl == 0 and "No" or #upgrades_tbl) .. ' Available Upgrades') .. '</b>',
                         layout = wibox.widget.textbox,
                     },
-                    #upgrades_tbl > 0 and {upgr_btn,
+                    #upgrades_tbl > 0 and {
+                        upgr_btn,
                         valign = 'center',
                         layout = wibox.container.place,
                     },
