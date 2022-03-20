@@ -16,6 +16,7 @@ config.popup_border_width = 1
 config.popup_border_color = '#7e7e7e'
 config.popup_height = 10
 config.popup_width = 300
+config.polkit_agent_path = '/usr/bin/lxpolkit'
 
 local function worker(user_args)
     local args = user_args or {}
@@ -23,6 +24,8 @@ local function worker(user_args)
     for prop, value in pairs(config) do
         _config[prop] = args[prop] or beautiful[prop] or value
     end
+
+    awful.spawn.once(_config.polkit_agent_path)
 
     pacman_widget = wibox.widget {
         {
@@ -98,7 +101,6 @@ local function worker(user_args)
         },
         opacity = upgr_opacity,
         layout = wibox.container.background
-
     }
 
     local busy, upgrading = false, false
@@ -122,7 +124,6 @@ local function worker(user_args)
             end
         end
     end)
-    awful.spawn.once([[/usr/bin/lxpolkit]])
     upgr_btn:connect_signal("button::press", function(c)
         c:set_opacity(1)
         c:emit_signal('widget::redraw_needed')
@@ -134,10 +135,9 @@ local function worker(user_args)
             busy, one_shot = true, true
             awful.spawn.with_line_callback("bash -c " .. DIR .. "upgrade", {
                 stdout = function()
-                    upgrading = true
                     if one_shot then
+                        upgrading, one_shot = true, false
                         timer:emit_signal("timeout") 
-                        one_shot = false 
                     end
                 end,
                 stderr = function(line)
@@ -147,10 +147,10 @@ local function worker(user_args)
                     end
                 end,
                 exit = function()
+                    upgrading, busy = false, false
                     c:set_opacity(upgr_opacity)
                     c:emit_signal('widget::redraw_needed')
                     timer:emit_signal("timeout")
-                    busy, upgrading = false, false
                 end,
             })
         end
