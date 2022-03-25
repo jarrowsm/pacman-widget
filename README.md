@@ -5,7 +5,7 @@ This widget displays the number of upgradable Pacman packages. Clicking the icon
 ![](screenshots/pacman.gif)
 
 ## Requirements
-`lxpolkit` is the default Polkit agent (see https://wiki.archlinux.org/title/Polkit).
+`lxpolkit` is the default [Polkit agent](https://wiki.archlinux.org/title/Polkit).
 
 The widget also uses the `checkupdates` script from the `pacman-contrib` package.
 

@@ -52,9 +52,7 @@ local function worker(user_args)
         )
     end
    
-    local rows = wibox.layout.fixed.vertical()
-    
-    local ptr = 0
+    local rows, ptr = wibox.layout.fixed.vertical(), 0
     rows:connect_signal("button::press", function(_,_,_,button)
           if button == 4 then
               if ptr > 0 then
@@ -189,15 +187,10 @@ local function worker(user_args)
                 layout = wibox.container.margin
             }
 
-            -- package got added
             for k, v in ipairs(upgrades_tbl) do
                 for i = 1, #rows.children do
                     if v == rows.children[i]:get_txt() then goto continue end
                 end
-                for j = k, #rows.children do  -- increment indeces after added
-                    rows.children[j]:set_idx(tostring(j+1))
-                end
-                
                 local row = wibox.widget{
                     {
                         id = 'idx',
@@ -217,19 +210,6 @@ local function worker(user_args)
                 function row:set_idx(idx) row:get_children_by_id('idx')[1]:set_text(idx) end
                 row:ajust_ratio(2, 0.1, 0.9, 0)
                 rows:insert(k, row)
-                ::continue::
-            end
-
-            -- package got removed
-            for i = 1, #rows.children do
-                for _, v in ipairs(upgrades_tbl) do
-                    if v == rows.children[i]:get_txt() then goto continue end
-                end
-                for j = i+1, #rows.children do  -- decrement indeces after removed
-                    rows.children[j]:set_idx(tostring(j-1))
-                end
-                rows:remove(i)
-                break
                 ::continue::
             end
 
