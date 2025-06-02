@@ -1,4 +1,6 @@
-# Pacman widget for AwesomeWM
+# Pacman widget for AwesomeWM.
+
+Latest version in [streetturtle/awesome-wm-widgets](https://github.com/streetturtle/awesome-wm-widgets/tree/master/pacman-widget).
 
 This widget displays the number of upgradable Pacman packages. Clicking the icon reveals a scrollable list of available upgrades. A full system upgrade can be performed from the widget via Polkit.
 
